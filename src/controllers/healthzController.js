@@ -1,4 +1,4 @@
-const { authenticate } = require('../config/dbconfig');
+const sequelize = require('../config/dbconfig');
 
 const apiHealthCheck = async (req, res) => {
     try {
@@ -17,7 +17,7 @@ const apiHealthCheck = async (req, res) => {
           }
           console.log("3");
           // Authenticate with the database
-          await authenticate();
+          await sequelize.authenticate();
           console.log("4");
           // Return HTTP 200 OK if successful
           res.status(200).set({ 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'X-Content-Type-Options': 'nosniff' }).send();
@@ -25,6 +25,7 @@ const apiHealthCheck = async (req, res) => {
   catch (error) {
       // Return HTTP 503 Service Unavailable if unsuccessful
       console.log("5");
+      console.log(error);
       res.status(503).set({ 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'X-Content-Type-Options': 'nosniff' }).send();
   }
   };
