@@ -1,0 +1,44 @@
+name: Node.js CI
+
+on:
+  
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+     
+    name: node_test
+    runs-on: ubuntu-latest
+
+    steps:
+  
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ github.event.head_commit.id }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20.11.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Application
+        run: |
+          npm start &
+          sleep 10
+          if ! curl -sSf http://localhost:3000 >/dev/null; then
+            echo "Server is not running"
+            exit 1
+          fi
