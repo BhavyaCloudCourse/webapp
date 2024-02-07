@@ -1,0 +1,144 @@
+const userService = require('../services/userService');
+const bcrypt = require('bcrypt');
+
+const createUser = async (req, res) => {
+  try {
+
+    // Extract necessary fields from the request body
+    const { username , password, first_name, last_name} = req.body;
+
+    console.log(Object.keys(req.body).length,Object.keys(req.query).length);
+    // Verify no body and params and in the request
+    if((Object.keys(req.query).length>0) || (Object.keys(req.body).length<=0)) {
+        return res.status(400).send();
+    }
+
+    // Check if a user with the same email already exists
+    const existingUser = await userService.getUserByUsername(username);
+    if (existingUser) {
+      console.log("User exists");
+      return res.status(400).send();
+    }
+
+     // Check if any additional fields are present in the request body
+     const additionalFields = Object.keys(req.body).filter(field => !['username', 'password', 'first_name', 'last_name'].includes(field));
+     if (additionalFields.length > 0) {
+      console.log("Extra fields");
+       return res.status(400).send();
+     }
+
+    // Create a new user
+    const newUser = await userService.createUser({
+      username,
+      password,
+      first_name,
+      last_name,
+    });
+
+    // Omit password from the response payload
+    const responseUser = {
+      id: newUser.id,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      username: newUser.username,
+      account_created: newUser.account_created,
+      account_updated: newUser.account_updated,
+    };
+
+    // Respond with a custom success message and the created user details
+    res.status(201).json(responseUser);
+  } catch (error) {
+    // Handle errors, such as validation errors or database errors
+    res.status(400).send();
+  }
+};
+
+
+const basicAuth = async (req, res, next) => {
+    const authHeader = req.header('Authorization');
+  
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      return res.status(401).send();
+    }
+  
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
+    const [username, password] = credentials.split(':');
+  
+    try {
+      const user = await userService.getUserByUsername(username);
+  
+      if (!user || !bcrypt.compareSync(password, user.password)) {
+        return res.status(401).send();
+      }
+  
+      req.user = {
+        id: user.id,
+        username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        account_created: user.account_created,
+        account_updated: user.account_updated,
+      };
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(400).send();
+    }
+  };
+
+  const getUser = async (req, res) => {
+    try {
+     
+    const { id, username, first_name, last_name, account_created, account_updated } = req.user;
+    console.log(Object.keys(req.body).length,Object.keys(req.query).length);
+    // Verify no body and params and in the request
+    if(Object.keys(req.query).length>0 || Object.keys(req.body).length>0) {
+        return res.status(400).send();
+    }
+    const userDetails = {
+      id,
+      first_name,
+      last_name,
+      username,
+      account_created,
+      account_updated,
+    };
+
+        const user = await userService.getUserByUsername(username);
+    
+        if (user) {
+          return res.status(200).json(userDetails);
+        }
+    } catch (error) {
+      res.status(400).send();
+    }
+  };
+
+  const updateUser = async (req, res) => {
+    console.log(req.body,req.user.id);
+    try {
+      // Check if any additional fields are present in the request body
+      const additionalFields = Object.keys(req.body).filter(field => !['password', 'first_name', 'last_name'].includes(field));
+      if (additionalFields.length > 0) {
+        console.log("Extra fields");
+        return res.status(400).send();
+      }
+      console.log(Object.keys(req.body).length,Object.keys(req.query).length);
+      // Verify no params and in the request
+      if((Object.keys(req.query).length>0) || (Object.keys(req.body).length<=0)) {
+          return res.status(400).send();
+      }
+      
+        const user = await userService.updateUser(req.user.id, req.body);
+        if(user){
+          return res.status(204).send();
+        }
+      
+    } catch (error) {
+      res.status(400).send();
+    }
+  };
+  
+
+module.exports = { createUser, getUser, basicAuth, updateUser};
