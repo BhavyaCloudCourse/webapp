@@ -27,19 +27,12 @@ To build and deploy this application locally , you'll need the following install
 Ensure you have a MySQL database set up. You can do this using a tool like MySQL Workbench or directly through the MySQL command line.
 
 5. Create a .env file in the root of your project directory <br>
-Inside the .env file, add the following environment variables: <br>
+Inside the .env file, add your_database_host, your_database_username, your_database_password, and your_database_name with your MySQL database connection details.
 
-
-DB_HOST=your_database_host<br>
-DB_USER=your_database_username<br>
-DB_PASSWORD=your_database_password<br>
-DB_NAME=your_database_name<br>
-_Replace your_database_host, your_database_username, your_database_password, and your_database_name with your MySQL database connection details._ <br>
-
-1. Running the Application Locally <br>
+6. Running the Application Locally <br>
 Once your database is set up and the .env file is configured, you can run the application locally by executing:
 
    ```sh
    node src\app.js
    ```
-1. Open Postman and navigate to http://localhost:8080 to access the endpoints.
+7. Open Postman and navigate to http://localhost:8080 to access the endpoints.
