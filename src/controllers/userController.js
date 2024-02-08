@@ -3,27 +3,35 @@ const bcrypt = require('bcrypt');
 
 const createUser = async (req, res) => {
   try {
-
     // Extract necessary fields from the request body
     const { username , password, first_name, last_name} = req.body;
 
     console.log(Object.keys(req.body).length,Object.keys(req.query).length);
-    // Verify no body and params and in the request
+    // Verify no params and  body and in the request
     if((Object.keys(req.query).length>0) || (Object.keys(req.body).length<=0)) {
         return res.status(400).send();
+    }
+    
+    const authHeader = req.header('Authorization');
+    //Check if it's an auth req
+    if (authHeader) {
+      return res.status(400).send();
+    }
+    //Check missing field
+    const missingFields = (['first_name', 'last_name', 'password', 'username']).filter(field => !(field in req.body));
+    if (missingFields.length > 0) {
+      return res.status(400).send();
     }
 
     // Check if a user with the same email already exists
     const existingUser = await userService.getUserByUsername(username);
     if (existingUser) {
-      console.log("User exists");
       return res.status(400).send();
     }
 
      // Check if any additional fields are present in the request body
      const additionalFields = Object.keys(req.body).filter(field => !['username', 'password', 'first_name', 'last_name'].includes(field));
      if (additionalFields.length > 0) {
-      console.log("Extra fields");
        return res.status(400).send();
      }
 
@@ -124,6 +132,11 @@ const basicAuth = async (req, res, next) => {
         console.log("Extra fields");
         return res.status(400).send();
       }
+       //Check missing field
+    const missingFields = (['first_name', 'last_name', 'password']).filter(field => !(field in req.body));
+    if (missingFields.length > 0) {
+      return res.status(400).send();
+    }
       console.log(Object.keys(req.body).length,Object.keys(req.query).length);
       // Verify no params and in the request
       if((Object.keys(req.query).length>0) || (Object.keys(req.body).length<=0)) {
