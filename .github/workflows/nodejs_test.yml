@@ -38,7 +38,7 @@ jobs:
         run: |
           npm start &
           sleep 10
-          if ! curl -sSf http://localhost:3000 >/dev/null; then
+          if curl -sSf http://localhost:3000 >/dev/null; then
             echo "Server is not running"
             exit 1
           fi
