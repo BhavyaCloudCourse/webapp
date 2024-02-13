@@ -14,9 +14,9 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_DATABASE: ${{env.MYSQL_DATABASE }}
-          MYSQL_PASSWORD: ${{env.MYSQL_PASSWORD}}
-          MYSQL_USER: ${{env.MYSQL_USER}}
+          MYSQL_DATABASE: ${{secret.MYSQL_DATABASE }}
+          MYSQL_PASSWORD: ${{secret.MYSQL_PASSWORD}}
+          MYSQL_USER: ${{secret.MYSQL_USER}}
         ports:
           - 3306:3306
 
@@ -31,20 +31,18 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Print Secret
-        run: |
-         echo "Secret value: ${{ env.MYSQL_DATABASE }}"
-
+   
       - name: Create database
         run: |
-          mysql -h 127.0.0.1 -u  ${{env.MYSQL_USER}} -p${{env.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{env.MYSQL_DATABASE}};"
+          sudo /etc/init.d/mysql start
+          mysql -h 127.0.0.1 -u  ${{secret.MYSQL_USER}} -p${{secret.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{secret.MYSQL_DATABASE}};"
 
       - name: Run tests
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
-          DB_USER: ${{env.MYSQL_USER}}
-          DB_PASSWORD: ${{env.MYSQL_PASSWORD}}
-          DB_NAME: ${{env.MYSQL_DATABASE}}
+          DB_USER: ${{secret.MYSQL_USER}}
+          DB_PASSWORD: ${{secret.MYSQL_PASSWORD}}
+          DB_NAME: ${{secret.MYSQL_DATABASE}}
           PORT: 8080
         run: npm test
