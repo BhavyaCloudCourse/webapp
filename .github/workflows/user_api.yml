@@ -14,9 +14,9 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD}}
-          MYSQL_USER: ${{ secrets.MYSQL_USER}}
+          MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE }}
+          MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+          MYSQL_USER: ${{secrets.MYSQL_USER}}
         ports:
           - 3306:3306
 
@@ -31,16 +31,19 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+      - name: Print Secret
+        run: |
+         echo "Secret value: ${{ secrets.YOUR_SECRET_NAME }}"
 
       - name: Create database
         run: |
-          mysql -h localhost -u  ${{ secrets.MYSQL_USER}} -p  ${{ secrets.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.MYSQL_DATABASE}};"
+          mysql -h 127.0.0.1 -u  ${{secrets.MYSQL_USER}} -p${{secrets.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{secrets.MYSQL_DATABASE}};"
 
       - name: Run tests
         env:
-          DATABASE_HOST: localhost
+          DATABASE_HOST: 127.0.0.1
           DATABASE_PORT: 3306
-          DATABASE_USER: ${{ secrets.MYSQL_USER}}
-          DATABASE_PASSWORD: ${{ secrets.MYSQL_PASSWORD}}
-          DATABASE_NAME: ${{ secrets.MYSQL_DATABASE}}
+          DATABASE_USER: ${{secrets.MYSQL_USER}}
+          DATABASE_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+          DATABASE_NAME: ${{secrets.MYSQL_DATABASE}}
         run: npm test
