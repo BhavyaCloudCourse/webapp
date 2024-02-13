@@ -1,0 +1,46 @@
+name: Run Tests
+
+on:
+  push:
+      branches: [ "main" ]
+  pull_request:
+      branches: [ "main" ]
+jobs:
+  test:
+    name: Test with MySQL
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD}}
+          MYSQL_USER: ${{ secrets.MYSQL_USER}}
+        ports:
+          - 3306:3306
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.11.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create database
+        run: |
+          mysql -h localhost -u  ${{ secrets.MYSQL_USER}} -p  ${{ secrets.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{ secrets.MYSQL_DATABASE}};"
+
+      - name: Run tests
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 3306
+          DATABASE_USER: ${{ secrets.MYSQL_USER}}
+          DATABASE_PASSWORD: ${{ secrets.MYSQL_PASSWORD}}
+          DATABASE_NAME: ${{ secrets.MYSQL_DATABASE}}
+        run: npm test
