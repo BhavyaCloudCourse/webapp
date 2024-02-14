@@ -12,13 +12,13 @@ jobs:
 
     services:
       mysql:
-        image: mysql:latest
-        env:
-          MYSQL_DATABASE: ${{secret.MYSQL_DATABASE }}
-          MYSQL_PASSWORD: ${{secret.MYSQL_PASSWORD}}
-          MYSQL_USER: ${{secret.MYSQL_USER}}
+        image: mysql:8.0
         ports:
-          - 3306:3306
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: some_db
 
     steps:
       - name: Checkout code
@@ -34,15 +34,17 @@ jobs:
    
       - name: Create database
         run: |
-          sudo systemctl start mysql
-          mysql -h 127.0.0.1 -u  ${{secret.MYSQL_USER}} -p${{secret.MYSQL_PASSWORD}} -e "CREATE DATABASE IF NOT EXISTS ${{secret.MYSQL_DATABASE}};"
+          sudo /etc/init.d/mysql start
+          sudo mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS some_db;'
+          mysql -uroot -proot some_db < ../database/schema/schema.sql
 
-      - name: Run tests
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_USER: ${{secret.MYSQL_USER}}
-          DB_PASSWORD: ${{secret.MYSQL_PASSWORD}}
-          DB_NAME: ${{secret.MYSQL_DATABASE}}
-          PORT: 8080
+      - name: Run Tests    
         run: npm test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: some_db
+          DB_USER: root
+          DB_PASSWORD: root
+          PORT: 8080
+        
