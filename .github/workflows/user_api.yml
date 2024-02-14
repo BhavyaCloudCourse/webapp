@@ -17,7 +17,8 @@ jobs:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           MYSQL_DATABASE: some_db
 
     steps:
@@ -35,7 +36,7 @@ jobs:
       - name: Create database
         run: |
           sudo /etc/init.d/mysql start
-          sudo mysql -uroot -proot -e 'CREATE DATABASE IF NOT EXISTS some_db;'
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS some_db;'
 
       - name: Run Tests    
         run: npm test
@@ -43,7 +44,7 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 3306
           DB_NAME: some_db
-          DB_USER: root
-          DB_PASSWORD: root
+          DB_USER: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           PORT: 8080
         
