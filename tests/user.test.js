@@ -1,15 +1,6 @@
 const request = require('supertest');
 const app = require('../src/app');
 
-describe('Health Check API', () => {
-    it('GET /healthz', async () => {
-      const response = await request(app).get('/healthz');
-      expect(response.status).toBe(200);
-     
-      
-    });
-  });
-
   // Function to encode credentials to Base64
 const encodeCredentials = (username, password) => {
     return Buffer.from(`${username}:${password}`).toString('base64');

@@ -36,10 +36,11 @@ jobs:
       - name: Create database
         run: |
           sudo /etc/init.d/mysql start
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS some_db;'
           sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS some_db;'
 
       - name: Run Tests    
-        run: npm test
+        run: npm test -- tests/user.test.js
         env:
           DB_HOST: localhost
           DB_PORT: 3306

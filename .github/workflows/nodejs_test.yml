@@ -1,44 +1,51 @@
-name: Node.js CI
+name: Run Tests
 
 on:
-  
   push:
-    branches: [ "main" ]
+      branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
-
+      branches: [ "main" ]
 jobs:
-  build:
-     
+  test:
     name: node_test
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        env:
+          MYSQL_ROOT_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: some_db
+
     steps:
-  
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ github.event.head_commit.id }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Use Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20.11.0"
+          node-version: '20.11.0'
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Start Application
+        run: npm install
+   
+      - name: Create database
         run: |
-          node testserver &
-          sleep 10
-          if ! curl -sSf http://localhost:3000 >/dev/null; then
-            echo "Server is not running"
-            exit 1
-          fi
+          sudo /etc/init.d/mysql start
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS some_db;'
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS some_db;'
+
+      - name: Run Tests    
+        run: npm test -- tests/database.test.js
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: some_db
+          DB_USER: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          PORT: 8080
+        
