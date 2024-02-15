@@ -39,7 +39,7 @@ const encodeCredentials = (username, password) => {
       // Validate the existence of the created user by fetching it
       const getRes = await request(app)
         .get('/v1/user/self')
-        .set('Authorization', `Basic ${base64Credentials}`); // Add Base64 encoded credentials
+        .set('Authorization', `Basic ${base64Credentials}`); 
   
       expect(getRes.statusCode).toEqual(200);
       expect(getRes.body.first_name).toEqual('John');
@@ -53,7 +53,7 @@ const encodeCredentials = (username, password) => {
       // Update the user account
       const updateRes = await request(app)
         .put('/v1/user/self')
-        .set('Authorization', `Basic ${base64Credentials}`) // Add Base64 encoded credentials
+        .set('Authorization', `Basic ${base64Credentials}`) 
         .send({ 
           first_name: 'Updated', 
           last_name: 'Updated', 
