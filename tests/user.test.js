@@ -5,8 +5,6 @@ describe('Health Check API', () => {
     it('GET /healthz', async () => {
       const response = await request(app).get('/healthz');
       expect(response.status).toBe(200);
-     
-      
     });
   });
 
@@ -17,7 +15,7 @@ const encodeCredentials = (username, password) => {
 
   describe('User API endpoints', () => {
     // Define your username and password
-    const username = 'v@gmail.com';
+    const username = 'b@gmail.com';
     const password = 'bhavya1234@G';
   
     // Encode credentials
