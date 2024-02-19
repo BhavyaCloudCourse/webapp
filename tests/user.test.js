@@ -69,7 +69,7 @@ const encodeCredentials = (username, password) => {
         .set('Authorization', `Basic ${base64Credentials}`); // Add Base64 encoded credentials
   
       expect(getUpdatedRes.statusCode).toEqual(200);
-      expect(getUpdatedRes.body.first_name).toEqual('Updated');
+      expect(getUpdatedRes.body.first_name).toEqual('x');
       expect(getUpdatedRes.body.last_name).toEqual('Updated');
      
     });
