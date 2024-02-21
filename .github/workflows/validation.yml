@@ -26,8 +26,11 @@ jobs:
     - name : Zipping all files
       run: zip -r webapp.zip .
 
+    - name : Packer Installation
+      run :  packer init .
+
     - name: Check Packer file formatting
       run: packer fmt -check gcp.pkr.hcl
       
     - name: Check Packer file formatting
-      run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=application_setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl 
+      run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl 
