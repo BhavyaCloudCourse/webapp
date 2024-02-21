@@ -87,8 +87,6 @@ jobs:
         run: packer fmt gcp.pkr.hcl
         
       - name: Check Packer file validation
-        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
-        
+        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' -var 'dbuser=${{ secrets.DBUSER }}' -var 'dbpasswd=${{ secrets.DBPASSWD }}' gcp.pkr.hcl
       - name: Buid Images
-        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
-        
+        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' -var 'dbuser=${{ secrets.DBUSER }}' -var 'dbpasswd=${{ secrets.DBPASSWD }}' gcp.pkr.hcl
