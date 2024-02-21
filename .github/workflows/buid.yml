@@ -90,5 +90,5 @@ jobs:
         run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
       - name: Buid Images
-        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}3' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
