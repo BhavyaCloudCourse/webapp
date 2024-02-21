@@ -32,7 +32,7 @@ source "googlecompute" "test-image" {
   source_image_family = "centos-stream-8"
   zone                = var.zone
   ssh_username        = "admin"
-  image_name          = "packer-${timestamp()}"
+  image_name          = "packer-${formatdate("YYYYMMDDHHmmss", timestamp())}"
 }
 
 build {
