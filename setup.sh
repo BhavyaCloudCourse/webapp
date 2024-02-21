@@ -12,8 +12,8 @@ sudo systemctl enable mysqld
 
 #Create database
 sudo mysql -u root -e "create database cloud"
-sudo mysql -u root -e "CREATE USER 'clouduser'@'localhost' IDENTIFIED BY 'bhavya1234@C'"
-sudo mysql -u root -e "GRANT ALL PRIVILEGES ON cloud.* TO 'clouduser'@'localhost';"
+sudo mysql -u root -e "CREATE USER '$DBUSER'@'localhost' IDENTIFIED BY '$DBPASSWD'"
+sudo mysql -u root -e "GRANT ALL PRIVILEGES ON cloud.* TO '$DBUSER'@'localhost';"
 sudo mysql -u root -e "FLUSH PRIVILEGES;"
 sudo mysql -u root -e "SHOW DATABASES";
 

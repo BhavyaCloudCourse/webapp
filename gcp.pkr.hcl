@@ -26,13 +26,29 @@ variable "app_file_dest" {
   type = string
 }
 
+variable "source_image_family" {
+  type = string
+}
+variable "ssh_username" {
+  type = string
+}
+variable "image_family" {
+  type = string
+}
+
+variable "dbuser" {
+  type = string
+}
+variable "dbpasswd" {
+  type = string
+}
 
 source "googlecompute" "test-image" {
   project_id          = var.project_id
-  source_image_family = "centos-stream-8"
+  source_image_family = var.source_image_family
   zone                = var.zone
-  ssh_username        = "admin"
-  image_family        = "csye6225"
+  ssh_username        = var.ssh_username
+  image_family        = var.image_family
   image_name          = "packer-${formatdate("YYYYMMDDHHmmss", timestamp())}"
 }
 
@@ -46,7 +62,8 @@ build {
 
 
   provisioner "shell" {
-    execute_command = "{{.Vars}} sudo -E -S bash '{{.Path}}'"
-    script          = var.script_path
+    environment_vars = ["DBUSER=${var.dbuser}", "DBPASSWD=${var.dbpasswd}"]
+    execute_command  = "{{.Vars}} sudo -E -S bash '{{.Path}}'"
+    script           = var.script_path
   }
 }
