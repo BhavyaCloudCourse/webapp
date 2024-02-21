@@ -66,6 +66,16 @@ jobs:
           unzip packer_1.7.5_linux_amd64.zip
           sudo mv packer /usr/local/bin/packer
           packer version
+      
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo DB_HOST=localhost>> .env
+          echo DB_PORT=3306>> .env
+          echo DB_NAME=cloud>> .env
+          echo DB_USER=${{ secrets.DB_USER }}>> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }}>> .env 
+          echo PORT=8080>> .env      
 
       - name : Zipping all files
         run: zip -r webapp.zip .
@@ -77,8 +87,8 @@ jobs:
         run: packer fmt gcp.pkr.hcl
         
       - name: Check Packer file validation
-        run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
       - name: Buid Images
-        run: packer build -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}3' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
