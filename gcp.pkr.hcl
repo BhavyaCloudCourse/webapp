@@ -44,6 +44,7 @@ build {
 
 
   provisioner "shell" {
-    script = var.script_path
+    execute_command = "{{.Vars}} sudo -E -S bash '{{.Path}}'"
+    script          = var.script_path
   }
 }
