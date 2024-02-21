@@ -42,34 +42,39 @@ ls /home/admin
 cd /home/admin || exit
 
 sudo unzip -o webapp.zip
-cd /home/admin/webapp/webapp || exit
+cd /home/admin/webapp || exit
 pwd
 sudo npm install
-sudo echo "The current username is: $USER"
-sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
-[Unit]
-Description=webapp
-After=network.target
+cd /home/admin/webapp || exit
+sudo npm start
+# cd /home/admin/webapp/webapp || exit
+# pwd
+# 
+# sudo echo "The current username is: $USER"
+# sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
+# [Unit]
+# Description=webapp
+# After=network.target
 
-[Service]
-Type=simple
-User=admin
-WorkingDirectory=/home/admin/webapp/webapp/
-ExecStart=/usr/bin/node /home/admin/webapp/webapp/server.js
-Restart=on-failure
+# [Service]
+# Type=simple
+# User=admin
+# WorkingDirectory=/home/admin/webapp/webapp/
+# ExecStart=/usr/bin/node /home/admin/webapp/webapp/server.js
+# Restart=on-failure
 
-[Install]
-WantedBy=multi-user.target
-EOF
+# [Install]
+# WantedBy=multi-user.target
+# EOF
 
-ls /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable csye6225.service
-sudo systemctl start csye6225.service
+# ls /etc/systemd/system/
+# sudo systemctl daemon-reload
+# sudo systemctl enable csye6225.service
+# sudo systemctl start csye6225.service
 
-sudo journalctl -u csye6225.service
-sudo netstat -ln | grep 3000
-sudo netstat -tulpn
+# sudo journalctl -u csye6225.service
+# sudo netstat -ln | grep 3000
+# sudo netstat -tulpn
 
 # sudo curl http://localhost:3000/healthz
 

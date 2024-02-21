@@ -43,7 +43,7 @@ build {
   }
 
 
-    provisioner "shell" {
-      script = var.script_path
-    }
+  provisioner "shell" {
+    script = var.script_path
+  }
 }

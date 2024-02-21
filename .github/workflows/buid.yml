@@ -1,0 +1,83 @@
+name: Run Tests
+
+on:
+  push:
+      branches: [ "main" ]
+  pull_request:
+      branches: [ "main" ]
+jobs:
+  test:
+    name: Packer Buld
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        env:
+          MYSQL_ROOT_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: some_db
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.11.0'
+
+      - name: Install dependencies
+        run: npm install
+   
+      - name: Create database
+        run: |
+          sudo /etc/init.d/mysql start
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS some_db;'
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE some_db;'
+          
+
+      - name: Run Tests    
+        run: npm test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: some_db
+          DB_USER: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          PORT: 8080
+
+      - name: Authenticate with Service Account Key
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+        
+      - name: Install Packer
+        run: |
+          wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
+          unzip packer_1.7.5_linux_amd64.zip
+          sudo mv packer /usr/local/bin/packer
+          packer version
+
+      - name : Zipping all files
+        run: zip -r webapp.zip .
+
+      - name: Check Packer file formatting
+        run: packer fmt gcp.pkr.hcl
+        
+      - name: Check Packer file validation
+        run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=application_setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        
+      - name: Buid Images
+        run: packer build -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=application_setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        
