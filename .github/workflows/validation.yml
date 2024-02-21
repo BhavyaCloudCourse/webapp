@@ -26,6 +26,9 @@ jobs:
     - name : Zipping all files
       run: zip -r webapp.zip .
 
+    - name : Packer Install
+      run : packer init .  
+
     - name: Check Packer file formatting
       run: packer fmt -check gcp.pkr.hcl
       

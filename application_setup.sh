@@ -1,15 +1,10 @@
 #!/bin/bash
-
 # Update the system
 sudo dnf update -y
-
-
 # Install MySQL 8
 sudo dnf install mysql-server -y
 sudo systemctl start mysqld
 sudo systemctl enable mysqld
-
-
 #Create database
 sudo mysql -u root -e "create database cloud"
 sudo mysql -u root -e "CREATE USER 'clouduser'@'localhost' IDENTIFIED BY 'bhavya1234@C'"
@@ -73,3 +68,4 @@ sudo netstat -tulpn
 
 # sudo curl http://localhost:3000/healthz
 
+#
