@@ -34,7 +34,7 @@ npm --version
 sudo dnf install -y unzip
 
 
-#install app
+#install webapp
 sudo setenforce 0
 sudo pwd
 sudo echo "The current username is: $USER"
