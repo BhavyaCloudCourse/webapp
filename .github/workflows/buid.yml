@@ -3,8 +3,6 @@ name: Run Tests
 on:
   push:
       branches: [ "main" ]
-  pull_request:
-      branches: [ "main" ]
 jobs:
   test:
     name: Packer Buld
@@ -61,7 +59,7 @@ jobs:
 
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
-        
+
       - name: Install Packer
         run: |
           wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
@@ -72,12 +70,15 @@ jobs:
       - name : Zipping all files
         run: zip -r webapp.zip .
 
+      - name : Packer Installation
+        run :  packer init .
+
       - name: Check Packer file formatting
         run: packer fmt gcp.pkr.hcl
         
       - name: Check Packer file validation
-        run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=application_setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        run: packer validate -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
       - name: Buid Images
-        run: packer build -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=application_setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
+        run: packer build -var 'project_id=dev-project-414723' -var 'zone=us-east4-b' -var 'script_path=setup.sh' -var 'app_file_src=webapp.zip' -var 'app_file_dest=/home/admin/webapp.zip' gcp.pkr.hcl     
         
