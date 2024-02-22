@@ -1,4 +1,4 @@
-# webapp
+# webapp-csye6225
 
 ## Prerequisites
 To build and deploy this application locally , you'll need the following installed on your machine:
