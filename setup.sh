@@ -85,5 +85,4 @@ sudo journalctl -u csye6225.service
 sudo netstat -ln | grep 3000
 sudo netstat -tulpn
 
-# sudo curl http://localhost:3000/healthz
 
