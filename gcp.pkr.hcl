@@ -66,4 +66,3 @@ build {
     execute_command  = "{{.Vars}} sudo -E -S bash '{{.Path}}'"
     script           = var.script_path
   }
-}
