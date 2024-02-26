@@ -44,7 +44,7 @@ variable "dbpasswd" {
 }
 
 source "googlecompute" "test-image" {
-  project_id          = var.project_id
+  project_id      = var.project_id
   source_image_family = var.source_image_family
   zone                = var.zone
   ssh_username        = var.ssh_username
