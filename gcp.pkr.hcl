@@ -7,7 +7,7 @@ packer {
   }
 }
 
-variable "project_id1" {
+variable "project_id" {
   type = string
 }
 
