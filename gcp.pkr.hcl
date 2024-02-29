@@ -36,12 +36,6 @@ variable "image_family" {
   type = string
 }
 
-variable "dbuser" {
-  type = string
-}
-variable "dbpasswd" {
-  type = string
-}
 
 source "googlecompute" "test-image" {
   project_id          = var.project_id
