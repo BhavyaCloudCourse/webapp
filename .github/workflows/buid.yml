@@ -65,17 +65,7 @@ jobs:
           wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
           unzip packer_1.7.5_linux_amd64.zip
           sudo mv packer /usr/local/bin/packer
-          packer version
-      
-      - name: 'Create env file'
-        run: |
-          touch .env
-          echo DB_HOST=localhost>> .env
-          echo DB_PORT=3306>> .env
-          echo DB_NAME=cloud>> .env
-          echo DB_USER=${{ secrets.DB_USER }}>> .env
-          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }}>> .env 
-          echo PORT=8080>> .env      
+          packer version     
 
       - name : Zipping all files
         run: zip -r webapp.zip .
@@ -87,6 +77,6 @@ jobs:
         run: packer fmt gcp.pkr.hcl
         
       - name: Check Packer file validation
-        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' -var 'dbuser=${{ secrets.DBUSER }}' -var 'dbpasswd=${{ secrets.DBPASSWD }}' gcp.pkr.hcl
+        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
       - name: Buid Images
-        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' -var 'dbuser=${{ secrets.DBUSER }}' -var 'dbpasswd=${{ secrets.DBPASSWD }}' gcp.pkr.hcl
+        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
