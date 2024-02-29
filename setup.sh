@@ -23,24 +23,26 @@ sudo setenforce 0
 sudo echo "The current username is: $USER"
 ls /home/admin
 cd /home/admin || exit
-# sudo groupadd csye6225
-# sudo useradd -s /usr/sbin/nologin -g csye6225 -d /opt/csye6225  -m csye6225
 sudo groupadd csye6225
-sudo useradd -M -s /usr/sbin/nologin -g csye6225 csye6225
-sudo mkdir -p /opt
+sudo useradd -s /usr/sbin/nologin -g csye6225 -d /opt/csye6225  -m csye6225
 sudo mv /home/admin/webapp.zip /opt/csye6225/webapp.zip
 cd /opt/csye6225 || exit
 sudo unzip -o webapp.zip
 cd /opt/csye6225/ || exit
 sudo npm install
 sudo ls /opt/csye6225/
+# sudo cat << EOF | sudo tee /opt/csye6225/.env
+# DB_HOST=$DB_HOST
+# DB_USER=$DB_USER
+# DB_PASSWORD=$DB_PASSWORD
+# DB_NAME=$DB_NAME
+# PORT=$PORT
+# DB_PORT=$DB_PORT
+# EOF
 sudo echo "The current username is: $USER"
-sudo chown -R csye6225:csye6225 /opt/csye6225
-sudo chmod -R 700 /opt/csye6225/*
 sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
 [Unit]
 Description=CSYE 6225 App
-ConditionPathExists=/opt/csye6225/.env
 After=network.target
 
 [Service]
@@ -64,6 +66,3 @@ ls /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable csye6225.service
 sudo systemctl start csye6225.service
-
-
-
