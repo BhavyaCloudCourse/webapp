@@ -29,16 +29,21 @@ sudo mv /home/admin/webapp.zip /opt/csye6225/webapp.zip
 cd /opt/csye6225 || exit
 sudo unzip -o webapp.zip
 cd /opt/csye6225/ || exit
-sudo npm cache clean --force
 sudo npm install
-sudo -rf node_modules
-sudo rm package-lock.json
-sudo npm install
+sudo ls /opt/csye6225/
+sudo cat << EOF | sudo tee /opt/csye6225/.env
+DB_HOST=$DB_HOST
+DB_USER=$DB_USER
+DB_PASSWORD=$DB_PASSWORD
+DB_NAME=$DB_NAME
+PORT=$PORT
+DB_PORT=$DB_PORT
+EOF
 sudo echo "The current username is: $USER"
-sudo chmod -R 700 /var/lib/mysql
 sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
 [Unit]
 Description=CSYE 6225 App
+ConditionPathExists=/opt/csye6225/.env
 After=network.target
 
 [Service]
