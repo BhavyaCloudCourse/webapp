@@ -62,7 +62,6 @@ build {
 
 
   provisioner "shell" {
-    environment_vars = ["DBUSER=${var.dbuser}", "DBPASSWD=${var.dbpasswd}"]
     execute_command  = "{{.Vars}} sudo -E -S bash '{{.Path}}'"
     script           = var.script_path
   }
