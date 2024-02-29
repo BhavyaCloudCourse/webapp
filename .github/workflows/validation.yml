@@ -32,5 +32,5 @@ jobs:
     - name: Check Packer file formatting
       run: packer fmt -check gcp.pkr.hcl
       
-    - name: Check Packer file formatting
-      run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' -var 'dbuser=${{ secrets.DBUSER }}' -var 'dbpasswd=${{ secrets.DBPASSWD }}' gcp.pkr.hcl
+    - name: Check Packer file validation
+      run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}'  gcp.pkr.hcl
