@@ -5,7 +5,7 @@ on:
       branches: [ "main" ]
 jobs:
   test:
-    name: Packer Buld
+    name: Packer Build
     runs-on: ubuntu-latest
 
     services:
