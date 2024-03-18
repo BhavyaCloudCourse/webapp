@@ -77,13 +77,17 @@ logging:
     my-app-processor:
       type: parse_json
       time_key: timestamp
-      time_format: "%Y-%m-%dT%H:%M:%S.%LZ"
+      time_format: "%Y-%m-%dT%H:%M:%S.%L%Z"
+    move_severity:
+      type: modify_fields
+      fields:
+        severity:
+          move_from: jsonPayload.level
   service:
     pipelines:
       default_pipeline:
         receivers: [my-app-receiver]
-        processors: [my-app-processor]
-
+        processors: [my-app-processor, move_severity]
 EOF
 
 

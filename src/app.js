@@ -20,13 +20,13 @@ async function startApp() {
 // Create a Winston logger instance
 const logger = winston.createLogger({
   format: winston.format.combine(
-    winston.format.timestamp(), // Include timestamp in log message
-    winston.format.json() // Use JSON format for logs
+    winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }),
+    winston.format.json()
   ),
   transports: [
     // Add a file transport to write logs to a file
     new winston.transports.File({ 
-      filename: '/var/log/webapp.log', // Adjust file path as needed
+      filename: '/var/log/webapp.log',
     })
   ],
 });
