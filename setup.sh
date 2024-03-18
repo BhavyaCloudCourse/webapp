@@ -31,14 +31,10 @@ sudo unzip -o webapp.zip
 cd /opt/csye6225/ || exit
 sudo npm install
 sudo ls /opt/csye6225/
-# sudo cat << EOF | sudo tee /opt/csye6225/.env
-# DB_HOST=$DB_HOST
-# DB_USER=$DB_USER
-# DB_PASSWORD=$DB_PASSWORD
-# DB_NAME=$DB_NAME
-# PORT=$PORT
-# DB_PORT=$DB_PORT
-# EOF
+sudo touch /var/log/webapp.log
+sudo chown csye6225:csye6225 /var/log/webapp.log
+sudo chmod 660 /var/log/webapp.log
+sudo ls /var/log/
 sudo echo "The current username is: $USER"
 sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
 [Unit]
@@ -61,8 +57,34 @@ SyslogIdentifier=csye6225
 WantedBy=multi-user.target
 EOF
 
-
 ls /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable csye6225.service
 sudo systemctl start csye6225.service
+
+curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
+sudo cat << EOF | sudo tee /etc/google-cloud-ops-agent/config.yaml
+logging:
+  receivers:
+    my-app-receiver:
+      type: files
+      include_paths:
+        - /var/log/webapp.log
+      record_log_file_path: true
+  processors:
+    my-app-processor:
+      type: parse_json
+      time_key: timestamp
+      time_format: "%Y-%m-%dT%H:%M:%S.%LZ"
+  service:
+    pipelines:
+      default_pipeline:
+        receivers: [my-app-receiver]
+        processors: [my-app-processor]
+
+EOF
+
+
+sudo systemctl restart google-cloud-ops-agent
