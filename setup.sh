@@ -39,6 +39,7 @@ sudo echo "The current username is: $USER"
 sudo cat << EOF | sudo tee /etc/systemd/system/csye6225.service
 [Unit]
 Description=CSYE 6225 App
+ConditionPathExists=/opt/csye6225/.env
 After=network.target
 
 [Service]
@@ -77,7 +78,7 @@ logging:
     my-app-processor:
       type: parse_json
       time_key: timestamp
-      time_format: "%Y-%m-%dT%H:%M:%S.%L%Z"
+      time_format: "%Y-%m-%dT%H:%M:%S.%L%z"
     move_severity:
       type: modify_fields
       fields:
