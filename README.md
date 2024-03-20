@@ -35,5 +35,5 @@ Once your database is set up and the .env file is configured, you can run the ap
    ```sh
    node src\app.js
    ```
-7. Open Postman and navigate to http://localhost:8080 to access the endpoints.
+7. Open Postman and navigate to http://localhost:8080 to access the endpoints..
    
