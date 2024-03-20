@@ -20,7 +20,7 @@ async function startApp() {
 // Create a Winston logger instance
 const logger = winston.createLogger({
   format: winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }),
+    winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSSSS[Z]'}),
     winston.format.json()
   ),
   transports: [
