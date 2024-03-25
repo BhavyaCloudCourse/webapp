@@ -99,7 +99,7 @@ const basicAuth = async (req, res, next) => {
       if (!user || !bcrypt.compareSync(password, user.password) ) {
         return res.status(401).send();
       }
-      if (!user.verified && user.username!="test@gmail.com") {
+      if (!user.verified && user.username!="test1@gmail.com") {
         return res.status(403).send("Email not verified");
       }
   
