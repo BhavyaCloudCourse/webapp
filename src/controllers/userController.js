@@ -41,7 +41,7 @@ const createUser = async (req, res) => {
        return res.status(400).send();
      }
 
-     const token = crypto.randomBytes(20).toString('hex');
+     const verificationToken = crypto.randomBytes(20).toString('hex');
      const tokenExpiry = moment().add(2, 'minutes').toDate();
 
     // Create a new user
@@ -50,7 +50,7 @@ const createUser = async (req, res) => {
       password,
       first_name,
       last_name,
-      token,
+      verificationToken,
       tokenExpiry
     });
 
@@ -175,6 +175,30 @@ const basicAuth = async (req, res, next) => {
       res.status(400).send();
     }
   };
+
+  const verifyUser  = async (req, res) => {
+    const token = req.params.token;
+    console.log(token);
+
+    try {
+      const user = await userService.getUserByToken(token);
+  
+      if (!user) {
+        return res.status(404).send('Invalid or expired token');
+      }
+  
+      if (moment().isAfter(user.tokenExpiry)) {
+        return res.status(400).send('Token has expired');
+      }
+  
+      await user.update({ verified: true });
+  
+      res.send('Email address verified successfully');
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      res.status(500).send('Internal server error');
+    }
+};
   
 
-module.exports = { createUser, getUser, basicAuth, updateUser};
+module.exports = { createUser, getUser, basicAuth, updateUser, verifyUser};
