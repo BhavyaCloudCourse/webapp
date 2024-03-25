@@ -38,5 +38,13 @@ const getUserByUsername = async (username) => {
       throw error;
     }
   };
+  const getUserByToken = async (token) => {
+    try {
+      const user = await User.findOne({ where: { verificationToken: token } });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-module.exports = { createUser,getUserByUsername, updateUser};
+module.exports = { createUser,getUserByUsername, updateUser, getUserByToken};
