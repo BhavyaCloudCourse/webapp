@@ -75,7 +75,18 @@ const User = sequelize.define('User', {
       }
     }
   },
- 
+  verificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  tokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false, // Default value indicating verification is not complete
+  },
 }, 
 {
   updatedAt: 'account_updated',
