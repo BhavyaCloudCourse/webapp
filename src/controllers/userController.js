@@ -71,7 +71,9 @@ const createUser = async (req, res) => {
       token: newUser.token
     };
     const dataBuffer = Buffer.from(JSON.stringify(verify_email_pub));
+    if(newUser.username!="test@gmail.com"){
     await pubsub.topic(TOPIC_NAME).publishMessage({ data: dataBuffer });
+    }
     // Respond with a custom success message and the created user details
     res.status(201).json(responseUser);
   } catch (error) {
@@ -99,7 +101,7 @@ const basicAuth = async (req, res, next) => {
       if (!user || !bcrypt.compareSync(password, user.password) ) {
         return res.status(401).send();
       }
-      if (!user.verified && user.username!="test1@gmail.com") {
+      if (!user.verified && user.username!="test@gmail.com") {
         return res.status(403).send("Email not verified");
       }
   
