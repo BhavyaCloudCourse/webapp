@@ -1,5 +1,11 @@
 const userService = require('../services/userService');
 const bcrypt = require('bcrypt');
+const moment = require('moment');
+const crypto = require('crypto');
+const { PubSub } = require('@google-cloud/pubsub');
+const pubsub = new PubSub({ projectId: 'dev-project-414723' });
+
+const TOPIC_NAME = 'verify_email';
 
 const createUser = async (req, res) => {
   try {
@@ -35,12 +41,17 @@ const createUser = async (req, res) => {
        return res.status(400).send();
      }
 
+     const token = crypto.randomBytes(20).toString('hex');
+     const tokenExpiry = moment().add(2, 'minutes').toDate();
+
     // Create a new user
     const newUser = await userService.createUser({
       username,
       password,
       first_name,
       last_name,
+      token,
+      tokenExpiry
     });
 
     // Omit password from the response payload
@@ -53,10 +64,19 @@ const createUser = async (req, res) => {
       account_updated: newUser.account_updated,
     };
 
+    
+    const verify_email_pub={
+      id: newUser.id,
+      email: newUser.username,
+      token: newUser.token
+    };
+    const dataBuffer = Buffer.from(JSON.stringify(verify_email_pub));
+    await pubsub.topic(TOPIC_NAME).publishMessage({ data: dataBuffer });
     // Respond with a custom success message and the created user details
     res.status(201).json(responseUser);
   } catch (error) {
     // Handle errors, such as validation errors or database errors
+    console.log(error);
     res.status(400).send();
   }
 };
@@ -76,8 +96,11 @@ const basicAuth = async (req, res, next) => {
     try {
       const user = await userService.getUserByUsername(username);
   
-      if (!user || !bcrypt.compareSync(password, user.password)) {
+      if (!user || !bcrypt.compareSync(password, user.password) ) {
         return res.status(401).send();
+      }
+      if (!user.verified) {
+        return res.status(403).send("Email not verified");
       }
   
       req.user = {
