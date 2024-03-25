@@ -15,7 +15,7 @@ const encodeCredentials = (username, password) => {
 
   describe('User API endpoints', () => {
     // Define your username and password
-    const username = 'test@gmail.com';
+    const username = 'test1@gmail.com';
     const password = 'bhavya1234@G';
   
     // Encode credentials
