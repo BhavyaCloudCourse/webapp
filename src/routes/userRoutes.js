@@ -5,7 +5,7 @@ const userController = require('../controllers/userController');
 router.post('/', userController.createUser);
 router.get('/self', userController.basicAuth, userController.getUser);
 router.put('/self', userController.basicAuth, userController.updateUser);
-router.post('/verify-email', userController.verifyUser);
-router.get('/verify/:tokeny', userController.verifyRedirect);
+//router.post('/verify-email', userController.verifyUser);
+router.get('/verify/:token', userController.verifyUser);
 
 module.exports = router;
