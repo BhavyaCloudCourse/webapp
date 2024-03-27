@@ -242,6 +242,7 @@ const verifyUser = async (req, res) => {
     }
 
     await user.update({ verified: true });
+    console.log(user);
 
     res.send('Email address verified successfully');
     logger.info('Email address verified successfully');
@@ -251,8 +252,16 @@ const verifyUser = async (req, res) => {
     logger.error('Error verifying email:', error);
     logger.debug('Bad Request');
     res.status(400).send('Internal server error');
-  }
+  } 
+};
+
+const verifyRedirect = async (req, res) => {
+  const tokeny = req.params.tokeny;
+  console.log(tokeny);
+  const verificationLink = `http://csye6225-bhavya-prakash.me:8080/v1/user/verify-email/${tokeny}`;
+  res.writeHead(200, { 'Content-Type':'text/html'});
+  res.end(`<!DOCTYPE html><html><body>Click the following button to verify your email address: <a href="${verificationLink}" style="text-decoration: none;"><button style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Verify Link</button></a></body></html>`);
 };
 
 
-module.exports = { createUser, getUser, basicAuth, updateUser, verifyUser };
+module.exports = { createUser, getUser, basicAuth, updateUser, verifyUser, verifyRedirect };
