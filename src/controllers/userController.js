@@ -221,7 +221,7 @@ const updateUser = async (req, res) => {
 };
 
 const verifyUser = async (req, res) => {
-  const token = req.body.token;
+  const token = req.params.token;
   console.log(token);
 
   try {
@@ -255,13 +255,13 @@ const verifyUser = async (req, res) => {
   } 
 };
 
-const verifyRedirect = async (req, res) => {
-  const tokeny = req.params.tokeny;
-  console.log(tokeny);
-  //const verificationLink = `http://csye6225-bhavya-prakash.me:8080/v1/user/verify-email/${tokeny}`;
-  res.writeHead(200, { 'Content-Type':'text/html'});
-  res.end(`<!DOCTYPE html><html><body><p>Click the following button to verify your email address:</p><form action="/v1/user/verify-email" method="post"><input type="hidden" name="token" value="${tokeny}"><button type="submit" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Verify Email</button></form></body></html>`);
-};
+// const verifyRedirect = async (req, res) => {
+//   const tokeny = req.params.tokeny;
+//   console.log(tokeny);
+//   //const verificationLink = `http://csye6225-bhavya-prakash.me:8080/v1/user/verify-email/${tokeny}`;
+//   res.writeHead(200, { 'Content-Type':'text/html'});
+//   res.end(`<!DOCTYPE html><html><body><p>Click the following button to verify your email address:</p><form action="/v1/user/verify-email" method="post"><input type="hidden" name="token" value="${tokeny}"><button type="submit" style="background-color: #4CAF50; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 4px;">Verify Email</button></form></body></html>`);
+// };
 
 
-module.exports = { createUser, getUser, basicAuth, updateUser, verifyUser, verifyRedirect };
+module.exports = { createUser, getUser, basicAuth, updateUser, verifyUser };
