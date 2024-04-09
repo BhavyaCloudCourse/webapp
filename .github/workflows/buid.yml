@@ -84,9 +84,7 @@ jobs:
       
       - name: Create new Instance Template version
         run: |
-          current_time=$(date +'%Y%m%d%H%M%S')
-          template_name="webapp-temp-${current_time}"
-          gcloud compute instance-templates create $template_name \
+          gcloud compute instance-templates create instance-webapp-temp-git \
             --project=dev-project-414723 \
             --machine-type=e2-standard-2 \
             --network-interface=subnet=webapp \
@@ -118,13 +116,13 @@ jobs:
       - name: Configure managed instance group
         run: |
           gcloud compute instance-groups managed set-instance-template instance-group-webapp1 \
-          --template=projects/dev-project-414723/regions/us-east4/instanceTemplates/$template_name \
+          --template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-webapp-temp-git \
           --region=us-east4
 
       - name: Start rolling update
         run: |
           gcloud compute instance-groups managed rolling-action start-update instance-group-webapp1 \
-          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/$template_name \
+          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-webapp-temp-git \
           --region=us-east4
 
       - name: Monitor update progress
