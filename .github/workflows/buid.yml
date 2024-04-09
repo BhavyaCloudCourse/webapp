@@ -87,10 +87,32 @@ jobs:
           current_time=$(date +'%Y%m%d%H%M%S')
           template_name="webapp-temp-${current_time}"
           gcloud compute instance-templates create $template_name \
-          --source-instance-template=instance-temp-webapp \
-          --project=dev-project-414723 \
-          --region=us-east4
-          
+            --project=dev-project-414723 \
+            --machine-type=e2-standard-2 \
+            --network-interface=subnet=webapp \
+            --instance-template-region=us-east4 \
+            --region=us-east4 \
+            --metadata=startup-script='#!/bin/bash
+              sudo cat << EOF | sudo tee /opt/csye6225/.env
+              DB_HOST="10.172.186.2"
+              DB_USER="webapp"
+              DB_PASSWORD="5j1sLJ(mSKB1]GNa"
+              DB_NAME="webapp"
+              PORT="8080"
+              DB_PORT="3306"
+              PROJECT_ID= "dev-project-414723"
+              TOPIC_NAME="verify_email"
+          EOF
+
+                  sudo systemctl restart csye6225.service
+                  sudo systemctl restart google-cloud-ops-agent
+                ' \
+                --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
+                --scopes=https://www.googleapis.com/auth/cloud-platform \
+                --tags=ssh-22,http-server-8080,allow-health-check \
+                --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced
+
+
                     
 
       - name: Configure managed instance group
