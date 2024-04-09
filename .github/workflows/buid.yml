@@ -78,5 +78,56 @@ jobs:
         
       - name: Check Packer file validation
         run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      
       - name: Buid Images
         run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      
+      - name: Create new Instance Template version
+        run: |
+         gcloud beta compute instance-templates create instance-temp-webapp-git \
+          --project=dev-project-414723 \
+          --machine-type=e2-standard-2 \
+          --network-interface=network-tier=PREMIUM,subnet=webapp \
+          --instance-template-region=projects/dev-project-414723/regions/us-east4 \
+          --metadata=startup-script='#!/bin/bash
+            sudo cat << EOF | sudo tee /opt/csye6225/.env
+            DB_HOST="10.172.186.2"
+            DB_USER="webapp"
+            DB_PASSWORD="5j1sLJ(mSKB1]GNa"
+            DB_NAME="webapp"
+            PORT="8080"
+            DB_PORT="3306"
+            PROJECT_ID= "dev-project-414723"
+            TOPIC_NAME="verify_email"
+            EOF
+
+            sudo systemctl restart csye6225.service
+            sudo systemctl restart google-cloud-ops-agent
+          ' \
+          --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
+          --scopes=https://www.googleapis.com/auth/cloud-platform \
+          --region=us-east4 \
+          --tags=ssh-22,http-server-8080,allow-health-check \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/dev-project-414723/global/images/packer-20240327091422,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,mode=rw,size=100,type=pd-balanced \
+         
+
+              
+
+      - name: Configure managed instance group
+        run: |
+          gcloud compute instance-groups managed set-instance-template instance-group-webapp1 \
+          --template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-temp-webapp-git \
+          --region=us-east4 \
+          --zone=us-east4-b
+
+      - name: Start rolling update
+        run: |
+          gcloud compute instance-groups managed rolling-action start-update instance-group-webapp1 \
+          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-temp-webapp-git
+          [--zone=us-east4 | --region=us-east4-b]
+
+      - name: Monitor update progress
+        run: |
+          gcloud compute instance-groups managed wait-until instance-group-webapp1 \
+          --version-target-reached \
+          --region=us-east4
