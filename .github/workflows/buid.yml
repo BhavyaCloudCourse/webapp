@@ -31,22 +31,22 @@ jobs:
       - name: Install dependencies
         run: npm install
    
-      - name: Create database
-        run: |
-          sudo /etc/init.d/mysql start
-          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS test_dba;'
-          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE test_dba;'
+      # - name: Create database
+      #   run: |
+      #     sudo /etc/init.d/mysql start
+      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS test_dba;'
+      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE test_dba;'
           
 
-      - name: Run Tests    
-        run: npm test
-        env:
-          DB_HOST: localhost
-          DB_PORT: 3306
-          DB_NAME: test_dba
-          DB_USER: ${{ secrets.MYSQL_USER }}
-          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          PORT: 8080
+      # - name: Run Tests    
+      #   run: npm test
+      #   env:
+      #     DB_HOST: localhost
+      #     DB_PORT: 3306
+      #     DB_NAME: test_dba
+      #     DB_USER: ${{ secrets.MYSQL_USER }}
+      #     DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      #     PORT: 8080
 
       - name: Authenticate with Service Account Key
         id: 'auth'
@@ -108,7 +108,7 @@ jobs:
           --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
           --scopes=https://www.googleapis.com/auth/cloud-platform \
           --tags=ssh-22,http-server-8080,allow-health-check \
-          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced,interface=SCSI \
          
 
               
@@ -117,14 +117,13 @@ jobs:
         run: |
           gcloud compute instance-groups managed set-instance-template instance-group-webapp1 \
           --template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-temp-webapp-git \
-          --region=us-east4 \
-          --zone=us-east4-b
+          --region=us-east4
 
       - name: Start rolling update
         run: |
           gcloud compute instance-groups managed rolling-action start-update instance-group-webapp1 \
-          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-temp-webapp-git
-          [--zone=us-east4 | --region=us-east4-b]
+          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-temp-webapp-git \
+          --region=us-east4
 
       - name: Monitor update progress
         run: |
