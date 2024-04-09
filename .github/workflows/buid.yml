@@ -60,35 +60,35 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
 
-      - name: Install Packer
-        run: |
-          wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
-          unzip packer_1.7.5_linux_amd64.zip
-          sudo mv packer /usr/local/bin/packer
-          packer version     
+      # - name: Install Packer
+      #   run: |
+      #     wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
+      #     unzip packer_1.7.5_linux_amd64.zip
+      #     sudo mv packer /usr/local/bin/packer
+      #     packer version     
 
-      - name : Zipping all files
-        run: zip -r webapp.zip .
+      # - name : Zipping all files
+      #   run: zip -r webapp.zip .
 
-      - name : Packer Installation
-        run :  packer init .
+      # - name : Packer Installation
+      #   run :  packer init .
 
-      - name: Check Packer file formatting
-        run: packer fmt gcp.pkr.hcl
+      # - name: Check Packer file formatting
+      #   run: packer fmt gcp.pkr.hcl
         
-      - name: Check Packer file validation
-        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      # - name: Check Packer file validation
+      #   run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
       
-      - name: Buid Images
-        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      # - name: Buid Images
+      #   run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
       
       - name: Create new Instance Template version
         run: |
          gcloud compute instance-templates create instance-temp-webapp-git \
           --project=dev-project-414723 \
           --machine-type=e2-standard-2 \
-          --network-interface=network-tier=PREMIUM,subnet=webapp \
-          --instance-template-region=projects/dev-project-414723/regions/us-east4 \
+          --network-interface=network=myvpc,subnet=webapp \
+          --instance-template-region=us-east4 \
           --metadata=startup-script='#!/bin/bash
             sudo cat << EOF | sudo tee /opt/csye6225/.env
             DB_HOST="10.172.186.2"
@@ -106,9 +106,8 @@ jobs:
           ' \
           --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
           --scopes=https://www.googleapis.com/auth/cloud-platform \
-          --region=us-east4 \
           --tags=ssh-22,http-server-8080,allow-health-check \
-          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/dev-project-414723/global/images/packer-20240327091422,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,mode=rw,size=100,type=pd-balanced \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced \
          
 
               
