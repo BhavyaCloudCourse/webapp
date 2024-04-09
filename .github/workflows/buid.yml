@@ -87,8 +87,9 @@ jobs:
          gcloud compute instance-templates create instance-temp-webapp-git \
           --project=dev-project-414723 \
           --machine-type=e2-standard-2 \
-          --network-interface=network=myvpc,subnet=webapp \
+          --network-interface=subnet=webapp \
           --instance-template-region=us-east4 \
+          --region=us-east4 \
           --metadata=startup-script='#!/bin/bash
             sudo cat << EOF | sudo tee /opt/csye6225/.env
             DB_HOST="10.172.186.2"
