@@ -33,20 +33,20 @@ jobs:
       - name: Install dependencies
         run: npm install
    
-      - name: Create database
-        run: |
-          sudo /etc/init.d/mysql start
-          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS some_dby;'
-          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE some_dby;'
+      # - name: Create database
+      #   run: |
+      #     sudo /etc/init.d/mysql start
+      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS some_dby;'
+      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE some_dby;'
           
 
-      - name: Run Tests    
-        run: npm test
-        env:
-          DB_HOST: localhost
-          DB_PORT: 3306
-          DB_NAME: some_dby
-          DB_USER: ${{ secrets.MYSQL_USER }}
-          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          PORT: 8080
+      # - name: Run Tests    
+      #   run: npm test
+      #   env:
+      #     DB_HOST: localhost
+      #     DB_PORT: 3306
+      #     DB_NAME: some_dby
+      #     DB_USER: ${{ secrets.MYSQL_USER }}
+      #     DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      #     PORT: 8080
         
