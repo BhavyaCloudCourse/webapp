@@ -31,22 +31,22 @@ jobs:
       - name: Install dependencies
         run: npm install
    
-      # - name: Create database
-      #   run: |
-      #     sudo /etc/init.d/mysql start
-      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS test_dba;'
-      #     sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE test_dba;'
+      - name: Create database
+        run: |
+          sudo /etc/init.d/mysql start
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'DROP DATABASE IF EXISTS test_dba;'
+          sudo mysql -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e 'CREATE DATABASE test_dba;'
           
 
-      # - name: Run Tests    
-      #   run: npm test
-      #   env:
-      #     DB_HOST: localhost
-      #     DB_PORT: 3306
-      #     DB_NAME: test_dba
-      #     DB_USER: ${{ secrets.MYSQL_USER }}
-      #     DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-      #     PORT: 8080
+      - name: Run Tests    
+        run: npm test
+        env:
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: test_dba
+          DB_USER: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          PORT: 8080
 
       - name: Authenticate with Service Account Key
         id: 'auth'
@@ -60,27 +60,27 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
 
-      # - name: Install Packer
-      #   run: |
-      #     wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
-      #     unzip packer_1.7.5_linux_amd64.zip
-      #     sudo mv packer /usr/local/bin/packer
-      #     packer version     
+      - name: Install Packer
+        run: |
+          wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
+          unzip packer_1.7.5_linux_amd64.zip
+          sudo mv packer /usr/local/bin/packer
+          packer version     
 
-      # - name : Zipping all files
-      #   run: zip -r webapp.zip .
+      - name : Zipping all files
+        run: zip -r webapp.zip .
 
-      # - name : Packer Installation
-      #   run :  packer init .
+      - name : Packer Installation
+        run :  packer init .
 
-      # - name: Check Packer file formatting
-      #   run: packer fmt gcp.pkr.hcl
+      - name: Check Packer file formatting
+        run: packer fmt gcp.pkr.hcl
         
-      # - name: Check Packer file validation
-      #   run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      - name: Check Packer file validation
+        run: packer validate -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
       
-      # - name: Buid Images
-      #   run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
+      - name: Buid Images
+        run: packer build -var 'project_id=${{ secrets.GCP_PROJECT }}' -var 'zone=${{ secrets.GCP_ZONE }}' -var 'script_path=${{ secrets.SCRIPT_PATH }}' -var 'app_file_src=${{ secrets.APP_FILE_SRC }}' -var 'app_file_dest=${{ secrets.APP_DEST_SRC }}' -var 'source_image_family=${{ secrets.SRC_IMG_FAM }}' -var 'ssh_username=${{ secrets.SSH_USER }}' -var 'image_family=${{ secrets.IMG_FAM }}' gcp.pkr.hcl
       
       - name: Create new Instance Template version
         run: |
