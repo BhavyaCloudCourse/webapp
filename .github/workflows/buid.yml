@@ -108,7 +108,7 @@ jobs:
           --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
           --scopes=https://www.googleapis.com/auth/cloud-platform \
           --tags=ssh-22,http-server-8080,allow-health-check \
-          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced,interface=SCSI \
+          --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced \
          
 
               
