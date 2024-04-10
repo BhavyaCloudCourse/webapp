@@ -123,7 +123,9 @@ jobs:
         run: |
           gcloud compute instance-groups managed rolling-action start-update ${{ secrets.INSTANCE_GROUP_NAME }} \
           --version=template=${{ secrets.INSTANCE_TEMP_PATH}} \
-          --region=${{ secrets.REGION }}
+          --region=${{ secrets.REGION }} \
+          --max-surge 1 \
+          --max-unavailable 0
 
       - name: Monitor update progress
         run: |
