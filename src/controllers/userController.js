@@ -123,7 +123,7 @@ const basicAuth = async (req, res, next) => {
       logger.warn('Email is not verified');
       logger.error('Email is not verified');
       logger.debug('Verify the email using the verification link');
-      return res.status(403).send("Email not verified");
+      return res.status(403).send("Email verification pending");
     }
 
     req.user = {
