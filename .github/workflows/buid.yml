@@ -108,7 +108,7 @@ jobs:
                 --service-account=${{ secrets.VM_SERVICE_ACCOUNT }} \
                 --scopes=${{ secrets.VM_SA_SCOPES }}\
                 --tags=${{ secrets.VM_TAGS }} \
-                --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=${{ secrets.IMAGE_FAMILY }},kms-key=${{ secrets.VM_KMS_KEY }},size=${{ secrets.VM_DISK_SIZE }},type=${{ secrets.VM_DISK_TYPE }}
+                --create-disk=auto-delete=${{ secrets.VM_DISK_AUTO_DEL }},boot=${{ secrets.VM_DISK_BOOT }},device-name=${{ secrets.VM_DISK_NAME }},image-family=${{ secrets.IMAGE_FAMILY }},kms-key=${{ secrets.VM_KMS_KEY }},size=${{ secrets.VM_DISK_SIZE }},type=${{ secrets.VM_DISK_TYPE }}
 
 
                     
@@ -124,8 +124,8 @@ jobs:
           gcloud compute instance-groups managed rolling-action start-update ${{ secrets.INSTANCE_GROUP_NAME }} \
           --version=template=${{ secrets.INSTANCE_TEMP_PATH}} \
           --region=${{ secrets.REGION }} \
-          --max-surge 3 \
-          --max-unavailable 0
+          --max-surge ${{ secrets.MAX_SURGE }} \
+          --max-unavailable ${{ secrets.MAX_UNAVAIL }}
 
       - name: Monitor update progress
         run: |
