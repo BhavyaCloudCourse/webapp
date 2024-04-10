@@ -108,7 +108,7 @@ jobs:
                 --service-account=${{ secrets.VM_SERVICE_ACCOUNT }} \
                 --scopes=${{ secrets.VM_SA_SCOPES }}\
                 --tags=${{ secrets.VM_TAGS }} \
-                --create-disk=image-family=${{ secrets.IMAGE_FAMILY }},kms-key=${{ secrets.VM_KMS_KEY }},size=${{ secrets.VM_DISK_SIZE }},type=${{ secrets.VM_DISK_TYPE }}
+                --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=${{ secrets.IMAGE_FAMILY }},kms-key=${{ secrets.VM_KMS_KEY }},size=${{ secrets.VM_DISK_SIZE }},type=${{ secrets.VM_DISK_TYPE }}
 
 
                     
