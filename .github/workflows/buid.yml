@@ -84,49 +84,49 @@ jobs:
       
       - name: Create new Instance Template version
         run: |
-          gcloud compute instance-templates create instance-webapp-temp-git \
-            --project=dev-project-414723 \
-            --machine-type=e2-standard-2 \
-            --network-interface=subnet=webapp \
-            --instance-template-region=us-east4 \
-            --region=us-east4 \
+          gcloud compute instance-templates create ${{ secrets.VM_TEMP_NAME }} \
+            --project=${{ secrets.GCP_PROJECT }} \
+            --machine-type=${{ secrets.VM_MACHINE_TYPE }} \
+            --network-interface=subnet=${{ secrets.VM_SUBNET }} \
+            --instance-template-region=${{ secrets.REGION }} \
+            --region=${{ secrets.REGION }} \
             --metadata=startup-script='#!/bin/bash
               sudo cat << EOF | sudo tee /opt/csye6225/.env
-              DB_HOST="10.172.186.2"
-              DB_USER="webapp"
-              DB_PASSWORD="5j1sLJ(mSKB1]GNa"
-              DB_NAME="webapp"
-              PORT="8080"
-              DB_PORT="3306"
-              PROJECT_ID= "dev-project-414723"
-              TOPIC_NAME="verify_email"
+              DB_HOST="${{ secrets.CLOUDSQL_DBHOST }}"
+              DB_USER="${{ secrets.CLOUDSQL_DBUSER }}"
+              DB_PASSWORD="${{ secrets.CLOUDSQL_DBPASSWORD }}"
+              DB_NAME="${{ secrets.CLOUDSQL_DBNAME }}"
+              PORT="${{ secrets.PORT }}"
+              DB_PORT="${{ secrets.CLOUDSQL_DBPORT }}"
+              PROJECT_ID= "${{ secrets.GCP_PROJECT }}"
+              TOPIC_NAME="${{ secrets.TOPIC_NAME }}"
           EOF
 
                   sudo systemctl restart csye6225.service
                   sudo systemctl restart google-cloud-ops-agent
                 ' \
-                --service-account=service-account-vm-id@dev-project-414723.iam.gserviceaccount.com \
-                --scopes=https://www.googleapis.com/auth/cloud-platform \
-                --tags=ssh-22,http-server-8080,allow-health-check \
-                --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image-family=csye6225,kms-key=projects/dev-project-414723/locations/us-east4/keyRings/my-key-ring3/cryptoKeys/vm-cmek3,size=100,type=pd-balanced
+                --service-account=${{ secrets.VM_SERVICE_ACCOUNT }} \
+                --scopes=${{ secrets.VM_SA_SCOPES }}\
+                --tags=${{ secrets.VM_TAGS }} \
+                --create-disk=image-family=${{ secrets.IMAGE_FAMILY }},kms-key=${{ secrets.VM_KMS_KEY }},size=${{ secrets.VM_DISK_SIZE }},type=${{ secrets.VM_DISK_TYPE }}
 
 
                     
 
       - name: Configure managed instance group
         run: |
-          gcloud compute instance-groups managed set-instance-template instance-group-webapp1 \
-          --template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-webapp-temp-git \
-          --region=us-east4
+          gcloud compute instance-groups managed set-instance-template ${{ secrets.INSTANCE_GROUP_NAME }} \
+          --template=${{ secrets.INSTANCE_TEMP_PATH}} \
+          --region=${{ secrets.REGION }}
 
       - name: Start rolling update
         run: |
-          gcloud compute instance-groups managed rolling-action start-update instance-group-webapp1 \
-          --version=template=projects/dev-project-414723/regions/us-east4/instanceTemplates/instance-webapp-temp-git \
-          --region=us-east4
+          gcloud compute instance-groups managed rolling-action start-update ${{ secrets.INSTANCE_GROUP_NAME }} \
+          --version=template=${{ secrets.INSTANCE_TEMP_PATH}} \
+          --region=${{ secrets.REGION }}
 
       - name: Monitor update progress
         run: |
-          gcloud compute instance-groups managed wait-until instance-group-webapp1 \
+          gcloud compute instance-groups managed wait-until ${{ secrets.INSTANCE_GROUP_NAME }} \
           --version-target-reached \
-          --region=us-east4
+          --region=${{ secrets.REGION }}
