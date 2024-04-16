@@ -25,7 +25,7 @@ const encodeCredentials = (username, password) => {
     it('Create an account, and using the GET call, validate account exists', async () => {
       // Create a new user account
       const createRes = await request(app)
-        .post('/v1/user')
+        .post('/v2/user')
         .send({ 
           first_name: 'John', 
           last_name: 'Doe', 
@@ -38,7 +38,7 @@ const encodeCredentials = (username, password) => {
   
       // Validate the existence of the created user by fetching it
       const getRes = await request(app)
-        .get('/v1/user/self')
+        .get('/v2/user/self')
         .set('Authorization', `Basic ${base64Credentials}`); 
   
       expect(getRes.statusCode).toEqual(200);
@@ -52,7 +52,7 @@ const encodeCredentials = (username, password) => {
     it(' Update the account and using the GET call, validate the account was updated.', async () => {
       // Update the user account
       const updateRes = await request(app)
-        .put('/v1/user/self')
+        .put('/v2/user/self')
         .set('Authorization', `Basic ${base64Credentials}`) 
         .send({ 
           first_name: 'Updated', 
@@ -65,7 +65,7 @@ const encodeCredentials = (username, password) => {
   
       // Validate the updated user by fetching it again
       const getUpdatedRes = await request(app)
-        .get('/v1/user/self')
+        .get('/v2/user/self')
         .set('Authorization', `Basic ${base64Credentials}`); // Add Base64 encoded credentials
   
       expect(getUpdatedRes.statusCode).toEqual(200);
