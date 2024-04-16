@@ -22,6 +22,6 @@ startApp();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/healthz',healthzRouter);
-app.use('/v1/user', userRouter);
+app.use('/v2/user', userRouter);
 
 module.exports=app;
